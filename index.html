@@ -1,0 +1,194 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Management System</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+
+
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #f2f4f8;
+}
+
+/* LOGIN BOX */
+.login-box {
+  width: 300px;
+  margin: 120px auto;
+  padding: 20px;
+  background: white;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 8px 0;
+}
+
+button {
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+/* DASHBOARD */
+header {
+  background: #222;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.box {
+  background: white;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ddd;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.delete {
+  background: red;
+}
+  </style>
+</head>
+<body>
+
+<div id="loginPage" class="login-box">
+  <h2>Login</h2>
+
+  <input type="text" id="username" placeholder="Username" />
+  <input type="password" id="password" placeholder="Password" />
+
+  <button onclick="login()">Login</button>
+
+  <p id="error"></p>
+</div>
+
+
+<div id="dashboard" style="display:none;">
+
+  <header>
+    <h1>Student Management System</h1>
+    <button onclick="logout()">Logout</button>
+  </header>
+
+
+  <div class="box">
+    <h3>Add Student</h3>
+    <input type="text" id="name" placeholder="Student Name" />
+    <input type="text" id="class" placeholder="Class" />
+    <button onclick="addStudent()">Add</button>
+  </div>
+
+
+  <div class="box">
+    <h3>Student List</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Class</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="table"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script >
+
+// ================= LOGIN =================
+function login() {
+  let u = document.getElementById("username").value;
+  let p = document.getElementById("password").value;
+
+  if (u === "admin" && p === "1234") {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+  } else {
+    document.getElementById("error").innerText = "Wrong username or password";
+  }
+}
+
+function logout() {
+  document.getElementById("loginPage").style.display = "block";
+  document.getElementById("dashboard").style.display = "none";
+}
+
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+function addStudent() {
+  let name = document.getElementById("name").value;
+  let cls = document.getElementById("class").value;
+
+  if (!name || !cls) return;
+
+  students.push({
+    id: Date.now(),
+    name: name,
+    class: cls
+  });
+
+  localStorage.setItem("students", JSON.stringify(students));
+
+  document.getElementById("name").value = "";
+  document.getElementById("class").value = "";
+
+  render();
+}
+
+function deleteStudent(id) {
+  students = students.filter(s => s.id !== id);
+  localStorage.setItem("students", JSON.stringify(students));
+  render();
+}
+
+function render() {
+  let table = document.getElementById("table");
+  table.innerHTML = "";
+
+  students.forEach(s => {
+    table.innerHTML += `
+      <tr>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.class}</td>
+        <td><button class="delete" onclick="deleteStudent(${s.id})">Delete</button></td>
+      </tr>
+    `;
+  });
+}
+
+render();
+
+</script>
+</body>
+</html>
